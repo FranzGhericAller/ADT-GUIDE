@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+typedef struct {
+    Person elem[MAX];
+    int count;
+} List;
+
+List initialize(List L) {
+    L.count = 0;
+    return L;
+}
+
+void display(List L) {
+    if (L.count == 0) {
+        printf("List is empty.\n");
+    } else {
+        for (int i = 0; i < L.count; i++) {
+            printf("Name: %s, Age: %d\n", L.elem[i].name, L.elem[i].age);
+        }
+    }
+}
+
+List insertPos(List L, Person data, int position) {
+    if (position < 0 || position > L.count) {
+        printf("Invalid position!\n");
+    } else if (L.count == MAX) {
+        printf("List is full!\n");
+    } else {
+        for (int i = L.count; i > position; i--) {
+            L.elem[i] = L.elem[i - 1];
+        }
+        L.elem[position] = data;
+        L.count++;
+    }
+    return L;
+}
+
+List deletePos(List L, int position) {
+    if (position < 0 || position >= L.count) {
+        printf("Invalid position!\n");
+    } else {
+        for (int i = position; i < L.count - 1; i++) {
+            L.elem[i] = L.elem[i + 1];
+        }
+        L.count--;
+    }
+    return L;
+}
+
+int locate(List L, char name[]) {
+    for (int i = 0; i < L.count; i++) {
+        if (strcmp(L.elem[i].name, name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+List insertSorted(List L, Person data) {
+    if (L.count == MAX) {
+        printf("List is full!\n");
+    } else {
+        int i = L.count - 1;
+        while (i >= 0 && L.elem[i].age > data.age) {
+            L.elem[i + 1] = L.elem[i];
+            i--;
+        }
+        L.elem[i + 1] = data;
+        L.count++;
+    }
+    return L;
+}
+
+int main() {
+    List L = initialize(L);
+    Person p1 = {"Alice", 25};
+    Person p2 = {"Bob", 20};
+    Person p3 = {"Charlie", 30};
+
+    L = insertPos(L, p1, 0);
+    L = insertPos(L, p2, 1);
+    L = insertSorted(L, p3);
+
+    display(L);
+
+    int pos = locate(L, "Bob");
+    printf("Bob is at index: %d\n", pos);
+
+    L = deletePos(L, 1);
+    display(L);
+
+    return 0;
+}

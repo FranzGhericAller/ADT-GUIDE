@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX 100
 
@@ -17,29 +18,29 @@ typedef struct {
 Stack* initialize() {
     Stack* S = (Stack*)malloc(sizeof(Stack));
     if (S != NULL) {
-        S->top = -1; // empty stack
+        S->top = -1;
     }
     return S;
 }
 
-int isFull(Stack* S) {
-    if (!S) return 0;
+bool isFull(Stack* S) {
+    if (!S) return false;
     return (S->top == MAX - 1);
 }
 
-int isEmpty(Stack* S) {
-    if (!S) return 1; // treat NULL as empty
+bool isEmpty(Stack* S) {
+    if (!S) return true;
     return (S->top == -1);
 }
 
 int push(Stack* S, Person p) {
     if (!S || isFull(S)) {
         printf("Stack is full. Cannot push %s.\n", p.name);
-        return 0; // failure
+        return 0;
     }
     S->top++;
     S->data[S->top] = p;
-    return 1; // success
+    return 1;
 }
 
 Person pop(Stack* S) {
@@ -79,10 +80,8 @@ void display(Stack* S) {
 }
 
 int main() {
-
     Stack* S = initialize();
 
-    // Create Person objects
     Person p1 = {"Alice", 25};
     Person p2 = {"Bob", 30};
     Person p3 = {"Charlie", 22};
@@ -96,7 +95,6 @@ int main() {
 
     printf("\nCurrent stack:\n");
     display(S);
-
 
     Person topPerson = peek(S);
     printf("\nPeek top: %s %d\n", topPerson.name, topPerson.age);
@@ -118,6 +116,6 @@ int main() {
     printf("\nFinal stack state:\n");
     display(S);
 
-    free(S); // free allocated stack memory
+    free(S);
     return 0;
 }

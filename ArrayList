@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 10
+
+typedef struct {
+    int id;
+    char name[30];
+} Person;
+
+typedef struct {
+    Person elem[MAX];
+    int count;
+} ArrayList;
+
+ArrayList initializeArray(ArrayList L) {
+    L.count = 0;
+    return L;
+}
+
+ArrayList insertPosArray(ArrayList L, Person p, int position) {
+    int i;
+
+    if (position >= 0 && position <= L.count && L.count < MAX) {
+
+        for (i = L.count; i > position; i--) {
+            L.elem[i] = L.elem[i - 1];
+        }
+
+        L.elem[position] = p;
+        L.count++;
+
+    } else {
+        printf("Array Insert Error: Invalid position or list full.\n");
+    }
+
+    return L;
+}
+
+ArrayList deletePosArray(ArrayList L, int position) {
+    int i;
+
+    if (position >= 0 && position < L.count) {
+
+        for (i = position; i < L.count - 1; i++) {
+            L.elem[i] = L.elem[i + 1];
+        }
+
+        L.count--;
+
+    } else {
+        printf("Array Delete Error: Invalid position.\n");
+    }
+
+    return L;
+}
+
+int locateArray(ArrayList L, int id) {
+    int i = 0;
+    int pos = -1;
+
+    while (i < L.count && pos == -1) {
+        if (L.elem[i].id == id) {
+            pos = i;
+        }
+        i++;
+    }
+
+    return pos;
+}
+
+ArrayList insertSortedArray(ArrayList L, Person p) {
+    int i = 0;
+
+    if (L.count < MAX) {
+
+        while (i < L.count && L.elem[i].id < p.id) {
+            i++;
+        }
+
+        L = insertPosArray(L, p, i);
+
+    } else {
+        printf("Array Sorted Insert Error: List full.\n");
+    }
+
+    return L;
+}
+
+void displayArray(ArrayList L) {
+    int i;
+
+    printf("\nArray List:\n");
+    for (i = 0; i < L.count; i++) {
+        printf("ID: %d | Name: %s\n",
+               L.elem[i].id,
+               L.elem[i].name);
+    }
+}

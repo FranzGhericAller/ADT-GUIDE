@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+typedef struct Node {
+    Person data;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* front;
+    Node* rear;
+} Queue;
+
+Queue* initialize() {
+    Queue* Q = (Queue*)malloc(sizeof(Queue));
+    if (Q != NULL) {
+        Q->front = NULL;
+        Q->rear = NULL;
+    }
+    return Q;
+}
+
+bool isFull(Queue* Q) {
+    return false;
+}
+
+bool isEmpty(Queue* Q) {
+    if (!Q || Q->front == NULL) return true;
+    return false;
+}
+
+int enqueue(Queue* Q, Person p) {
+    if (!Q) return 0;
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) return 0;
+    newNode->data = p;
+    newNode->next = NULL;
+    if (isEmpty(Q)) {
+        Q->front = newNode;
+        Q->rear = newNode;
+    } else {
+        Q->rear->next = newNode;
+        Q->rear = newNode;
+    }
+    return 1;
+}
+
+Person dequeue(Queue* Q) {
+    Person emptyPerson = {"", -1};
+    if (!Q || isEmpty(Q)) return emptyPerson;
+    Node* temp = Q->front;
+    Person frontPerson = temp->data;
+    Q->front = Q->front->next;
+    if (Q->front == NULL) Q->rear = NULL;
+    free(temp);
+    return frontPerson;
+}
+
+Person front(Queue* Q) {
+    Person emptyPerson = {"", -1};
+    if (!Q || isEmpty(Q)) return emptyPerson;
+    return Q->front->data;
+}
+
+void display(Queue* Q) {
+    if (!Q || isEmpty(Q)) {
+        printf("Queue is empty.\n");
+        return;
+    }
+    Node* current = Q->front;
+    printf("Queue (front -> rear):\n");
+    while (current != NULL) {
+        printf("%s %d\n", current->data.name, current->data.age);
+        current = current->next;
+    }
+}
+
+int main() {
+    Queue* Q = initialize();
+
+    Person p1 = {"Alice", 25};
+    Person p2 = {"Bob", 30};
+    Person p3 = {"Charlie", 22};
+    Person p4 = {"Diana", 28};
+
+    enqueue(Q, p1);
+    enqueue(Q, p2);
+    enqueue(Q, p3);
+    enqueue(Q, p4);
+
+    display(Q);
+
+    Person f = front(Q);
+    printf("\nFront: %s %d\n", f.name, f.age);
+
+    Person d = dequeue(Q);
+    printf("\nDequeued: %s %d\n", d.name, d.age);
+
+    display(Q);
+
+    while (!isEmpty(Q)) {
+        Person p = dequeue(Q);
+        printf("Dequeued: %s %d\n", p.name, p.age);
+    }
+
+    display(Q);
+
+    free(Q);
+    return 0;
+}

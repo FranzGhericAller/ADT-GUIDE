@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+typedef struct {
+    Person data[MAX];
+    int top;
+} Stack;
+
+Stack* initialize() {
+    Stack* S = (Stack*)malloc(sizeof(Stack));
+    if (S != NULL) {
+        S->top = -1; // empty stack
+    }
+    return S;
+}
+
+int isFull(Stack* S) {
+    if (!S) return 0;
+    return (S->top == MAX - 1);
+}
+
+int isEmpty(Stack* S) {
+    if (!S) return 1; // treat NULL as empty
+    return (S->top == -1);
+}
+
+int push(Stack* S, Person p) {
+    if (!S || isFull(S)) {
+        printf("Stack is full. Cannot push %s.\n", p.name);
+        return 0; // failure
+    }
+    S->top++;
+    S->data[S->top] = p;
+    return 1; // success
+}
+
+Person pop(Stack* S) {
+    Person emptyPerson = {"", -1};
+    if (!S || isEmpty(S)) {
+        printf("Stack is empty. Cannot pop.\n");
+        return emptyPerson;
+    }
+    Person topPerson = S->data[S->top];
+    S->top--;
+    return topPerson;
+}
+
+Person peek(Stack* S) {
+    Person emptyPerson = {"", -1};
+    if (!S || isEmpty(S)) {
+        printf("Stack is empty. Cannot peek.\n");
+        return emptyPerson;
+    }
+    return S->data[S->top];
+}
+
+int top(Stack* S) {
+    if (!S) return -1;
+    return S->top;
+}
+
+void display(Stack* S) {
+    if (!S || isEmpty(S)) {
+        printf("Stack is empty.\n");
+        return;
+    }
+    printf("Stack (top -> bottom):\n");
+    for (int i = S->top; i >= 0; i--) {
+        printf("%s %d\n", S->data[i].name, S->data[i].age);
+    }
+}
+
+int main() {
+
+    Stack* S = initialize();
+
+    // Create Person objects
+    Person p1 = {"Alice", 25};
+    Person p2 = {"Bob", 30};
+    Person p3 = {"Charlie", 22};
+    Person p4 = {"Diana", 28};
+
+    printf("Pushing elements:\n");
+    push(S, p1);
+    push(S, p2);
+    push(S, p3);
+    push(S, p4);
+
+    printf("\nCurrent stack:\n");
+    display(S);
+
+
+    Person topPerson = peek(S);
+    printf("\nPeek top: %s %d\n", topPerson.name, topPerson.age);
+
+    Person popped = pop(S);
+    printf("\nPopped: %s %d\n", popped.name, popped.age);
+
+    printf("\nStack after pop:\n");
+    display(S);
+
+    printf("\nCurrent top index: %d\n", top(S));
+
+    printf("\nPopping all remaining elements:\n");
+    while(!isEmpty(S)) {
+        Person p = pop(S);
+        printf("Popped: %s %d\n", p.name, p.age);
+    }
+
+    printf("\nFinal stack state:\n");
+    display(S);
+
+    free(S); // free allocated stack memory
+    return 0;
+}

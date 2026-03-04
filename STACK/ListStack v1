@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct {
     char name[50];
@@ -24,13 +25,13 @@ Stack* initialize() {
     return S;
 }
 
-int isFull(Stack* S) {
-    return 0;
+bool isFull(Stack* S) {
+    return false;
 }
 
-int isEmpty(Stack* S) {
-    if (!S || S->top == NULL) return 1;
-    return 0;
+bool isEmpty(Stack* S) {
+    if (!S || S->top == NULL) return true;
+    return false;
 }
 
 int push(Stack* S, Person p) {

@@ -40,28 +40,36 @@ int enqueue(Queue* Q, Person p) {
         printf("Queue is full. Cannot enqueue %s.\n", p.name);
         return 0;
     }
+
     Q->rear = (Q->rear + 1) % MAX;
     Q->data[Q->rear] = p;
+
+    printf("%s added to queue.\n", p.name);
     return 1;
 }
 
 Person dequeue(Queue* Q) {
     Person emptyPerson = {"", -1};
+
     if (!Q || isEmpty(Q)) {
         printf("Queue is empty. Cannot dequeue.\n");
         return emptyPerson;
     }
+
     Person frontPerson = Q->data[Q->front];
     Q->front = (Q->front + 1) % MAX;
+
     return frontPerson;
 }
 
 Person front(Queue* Q) {
     Person emptyPerson = {"", -1};
+
     if (!Q || isEmpty(Q)) {
-        printf("Queue is empty. Cannot access front.\n");
+        printf("Queue is empty.\n");
         return emptyPerson;
     }
+
     return Q->data[Q->front];
 }
 
@@ -70,44 +78,77 @@ void display(Queue* Q) {
         printf("Queue is empty.\n");
         return;
     }
-    printf("Queue (front -> rear):\n");
+
+    printf("\nQueue (front -> rear):\n");
+
     int i = Q->front;
+
     while (true) {
-        printf("%s %d\n", Q->data[i].name, Q->data[i].age);
-        if (i == Q->rear) break;
+        printf("Name: %s | Age: %d\n", Q->data[i].name, Q->data[i].age);
+
+        if (i == Q->rear)
+            break;
+
         i = (i + 1) % MAX;
     }
 }
 
 int main() {
+
     Queue* Q = initialize();
+    int choice;
+    Person p;
 
-    Person p1 = {"Alice", 25};
-    Person p2 = {"Bob", 30};
-    Person p3 = {"Charlie", 22};
-    Person p4 = {"Diana", 28};
+    do {
 
-    enqueue(Q, p1);
-    enqueue(Q, p2);
-    enqueue(Q, p3);
-    enqueue(Q, p4);
+        printf("\n===== QUEUE MENU =====\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. View Front\n");
+        printf("4. Display Queue\n");
+        printf("5. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
 
-    display(Q);
+        switch(choice) {
 
-    Person f = front(Q);
-    printf("\nFront: %s %d\n", f.name, f.age);
+        case 1:
+            printf("Enter name: ");
+            scanf("%s", p.name);
 
-    Person d = dequeue(Q);
-    printf("\nDequeued: %s %d\n", d.name, d.age);
+            printf("Enter age: ");
+            scanf("%d", &p.age);
 
-    display(Q);
+            enqueue(Q, p);
+            break;
 
-    while (!isEmpty(Q)) {
-        Person p = dequeue(Q);
-        printf("Dequeued: %s %d\n", p.name, p.age);
-    }
+        case 2: {
+            Person removed = dequeue(Q);
+            if (removed.age != -1)
+                printf("Dequeued: %s %d\n", removed.name, removed.age);
+            break;
+        }
 
-    display(Q);
+        case 3: {
+            Person f = front(Q);
+            if (f.age != -1)
+                printf("Front: %s %d\n", f.name, f.age);
+            break;
+        }
+
+        case 4:
+            display(Q);
+            break;
+
+        case 5:
+            printf("Exiting program...\n");
+            break;
+
+        default:
+            printf("Invalid choice.\n");
+        }
+
+    } while(choice != 5);
 
     free(Q);
     return 0;

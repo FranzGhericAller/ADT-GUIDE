@@ -1,5 +1,220 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+typedef struct Node {
+    Person data;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;
+    int count;
+} List;
+
+List* initialize() {
+    List* list = (List*)malloc(sizeof(List));
+    if (list != NULL) {
+        list->head = NULL;
+        list->count = 0;
+    }
+    return list;
+}
+
+void empty(List* list) {
+    if (!list) return;
+
+    Node* current = list->head;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
+
+    list->head = NULL;
+    list->count = 0;
+}
+
+void insertFirst(List* list, Person data) {
+    if (!list) return;
+
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) return;
+
+    newNode->data = data;
+    newNode->next = list->head;
+    list->head = newNode;
+
+    list->count++;
+}
+
+void insertLast(List* list, Person data) {
+    if (!list) return;
+
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) return;
+
+    newNode->data = data;
+    newNode->next = NULL;
+
+    if (list->head == NULL) {
+        list->head = newNode;
+    } else {
+        Node* current = list->head;
+        while (current->next != NULL)
+            current = current->next;
+
+        current->next = newNode;
+    }
+
+    list->count++;
+}
+
+void insertPos(List* list, Person data, int index) {
+    if (!list || index < 0 || index > list->count) {
+        printf("Invalid position.\n");
+        return;
+    }
+
+    if (index == 0) {
+        insertFirst(list, data);
+        return;
+    }
+
+    if (index == list->count) {
+        insertLast(list, data);
+        return;
+    }
+
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) return;
+
+    newNode->data = data;
+
+    Node* current = list->head;
+    for (int i = 0; i < index - 1; i++)
+        current = current->next;
+
+    newNode->next = current->next;
+    current->next = newNode;
+
+    list->count++;
+}
+
+void deleteStart(List* list) {
+    if (!list || list->head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    Node* temp = list->head;
+    list->head = temp->next;
+    free(temp);
+
+    list->count--;
+}
+
+void deleteLast(List* list) {
+    if (!list || list->head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    if (list->count == 1) {
+        free(list->head);
+        list->head = NULL;
+    } else {
+        Node* current = list->head;
+
+        for (int i = 0; i < list->count - 2; i++)
+            current = current->next;
+
+        free(current->next);
+        current->next = NULL;
+    }
+
+    list->count--;
+}
+
+void deletePos(List* list, int index) {
+    if (!list || index < 0 || index >= list->count) {
+        printf("Invalid position.\n");
+        return;
+    }
+
+    if (index == 0) {
+        deleteStart(list);
+        return;
+    }
+
+    Node* current = list->head;
+
+    for (int i = 0; i < index - 1; i++)
+        current = current->next;
+
+    Node* temp = current->next;
+    current->next = temp->next;
+
+    free(temp);
+
+    list->count--;
+}
+
+Person retrieve(List* list, int index) {
+    Person emptyPerson = {"", -1};
+
+    if (!list || index < 0 || index >= list->count)
+        return emptyPerson;
+
+    Node* current = list->head;
+
+    for (int i = 0; i < index; i++)
+        current = current->next;
+
+    return current->data;
+}
+
+int locate(List* list, char name[]) {
+    if (!list || list->head == NULL)
+        return -1;
+
+    Node* current = list->head;
+    int index = 0;
+
+    while (current != NULL) {
+        if (strcmp(current->data.name, name) == 0)
+            return index;
+
+        current = current->next;
+        index++;
+    }
+
+    return -1;
+}
+
+void display(List* list) {
+    if (!list || list->head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    Node* current = list->head;
+
+    printf("\n--- List Contents ---\n");
+    while (current != NULL) {
+        printf("Name: %s | Age: %d\n", current->data.name, current->data.age);
+        current = current->next;
+    }
+}
+
 int main() {
     List* myList = initialize();
+
     int choice, index;
     Person p;
     char name[50];
@@ -12,8 +227,8 @@ int main() {
         printf("4. Delete First\n");
         printf("5. Delete Last\n");
         printf("6. Delete at Position\n");
-        printf("7. Locate Person by Name\n");
-        printf("8. Retrieve Person by Index\n");
+        printf("7. Locate Person\n");
+        printf("8. Retrieve Person\n");
         printf("9. Display List\n");
         printf("0. Exit\n");
         printf("Enter choice: ");
@@ -49,12 +264,10 @@ int main() {
 
         case 4:
             deleteStart(myList);
-            printf("First node deleted.\n");
             break;
 
         case 5:
             deleteLast(myList);
-            printf("Last node deleted.\n");
             break;
 
         case 6:
@@ -76,9 +289,11 @@ int main() {
         case 8: {
             printf("Enter index to retrieve: ");
             scanf("%d", &index);
+
             Person result = retrieve(myList, index);
+
             if (result.age != -1)
-                printf("Name: %s, Age: %d\n", result.name, result.age);
+                printf("Name: %s | Age: %d\n", result.name, result.age);
             else
                 printf("Invalid index.\n");
             break;
@@ -93,7 +308,7 @@ int main() {
             break;
 
         default:
-            printf("Invalid choice!\n");
+            printf("Invalid choice.\n");
         }
 
     } while(choice != 0);
